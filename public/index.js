@@ -1,17 +1,46 @@
-function addWorkout(isAdding) {
+let workouts = [];
+
+fetch("/api/workouts")
+  .then(response => response.json())
+  .then(data => {
+    // save db data on global variable
+    workouts = data;
+    populateTable();
+  });
+
+function populateTable() {
+    const tbody = document.querySelector("#tbody");
+    tbody.innerHTML = "";
+  
+    workouts.forEach(workout => {
+      // create and populate a table row
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${workout.name}</td>
+        <td>${workout.exercises}</td>
+        <button id="add-exercise"><i class="fa"></i> Add Exercise</button>
+      `;
+  
+      tbody.appendChild(tr);
+    });
+  }
+
+function addWorkout() {
     const workoutEl = document.querySelector("#t-workout");
-    const exerciseEl = document.querySelector("#t-exercise");
+    // const exerciseEl = document.querySelector("#t-exercise");
     const errorEl = document.querySelector("form .error");
   
     // validate form
-    if (workoutEl.value === "" || exerciseEl.value === "") {
+    if (workoutEl.value === "" 
+    // || exerciseEl.value === ""
+    ) {
       errorEl.textContent = "Missing Information";
       return;
     } else {
       errorEl.textContent = "";
     }
   
-    // create record
+    // create workout
     const workout = {
       name: workout.value
     };
@@ -21,7 +50,7 @@ function addWorkout(isAdding) {
   
     // re-run logic to populate ui with new record
     // populateChart();
-    // populateTable();
+    populateTable();
     // populateTotal();
   
     // also send to server
@@ -40,7 +69,7 @@ function addWorkout(isAdding) {
         } else {
           // clear form
           workoutEl.value = "";
-          exerciseEl.value = "";
+        //   exerciseEl.value = "";
         }
       })
       .catch(err => {
@@ -49,12 +78,12 @@ function addWorkout(isAdding) {
   
         // clear form
         workoutEl.value = "";
-        exerciseEl.value = "";
+        // exerciseEl.value = "";
       });
   }
 
 
 document.querySelector("#create-workout").addEventListener("click", function(event) {
     event.preventDefault();
-    sendTransaction(true);
+    addWorkout();
   });
