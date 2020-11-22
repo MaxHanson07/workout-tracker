@@ -18,12 +18,20 @@ function populateTable() {
       tr.innerHTML = `
         <td>${workout.name}</td>
         <td>${workout.exercises}</td>
+        <label for="t-name">Exercise Name:</label>
+        <input type="text" id="t-exercise" placeholder="Name" />
         <button id="add-exercise"><i class="fa"></i> Add Exercise</button>
       `;
   
       tbody.appendChild(tr);
+
+      document.querySelector("#add-exercise").addEventListener("click", function(event) {
+        event.preventDefault();
+        addExercise();
+      });
     });
   }
+
 
 function addWorkout() {
     const workoutEl = document.querySelector("#t-workout");
@@ -42,7 +50,7 @@ function addWorkout() {
   
     // create workout
     const workout = {
-      name: workout.value
+      name: workoutEl.value
     };
   
     // add to beginning of current array of data
@@ -73,8 +81,6 @@ function addWorkout() {
         }
       })
       .catch(err => {
-        // fetch failed, so save in indexed db
-        saveRecord(workout);
   
         // clear form
         workoutEl.value = "";
@@ -82,6 +88,44 @@ function addWorkout() {
       });
   }
 
+  function addExercise() {
+    const exerciseEl = document.querySelector("#t-exercise");
+
+    const exercises = {
+        name: exerciseEl.value,
+        // type: exercises.value,
+        // weight: Number,
+        // duration: Number,
+        // setsreps: Number,
+        // miles: Number
+      };
+
+
+      fetch("/api/exercises", {
+        method: "POST",
+        body: JSON.stringify(exercises),
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json"
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.errors) {
+            errorEl.textContent = "Missing Information";
+          } else {
+            // clear form
+            exerciseEl.value = "";
+          //   exerciseEl.value = "";
+          }
+        })
+        .catch(err => {
+          // clear form
+          exerciseEl.value = "";
+          // exerciseEl.value = "";
+        }); 
+
+  }
 
 document.querySelector("#create-workout").addEventListener("click", function(event) {
     event.preventDefault();
