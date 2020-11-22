@@ -3,6 +3,7 @@ const db = require("../models")
 const router = require("express").Router();
 
 
+
   router.get("/api/workouts/populated", function (req, res) {
     db.Workout.find({}).populate("exercises").then(data => {
       res.json(data)
