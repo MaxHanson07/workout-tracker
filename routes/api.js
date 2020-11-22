@@ -1,21 +1,21 @@
 const mongoose = require("mongoose");
 const db = require("../models")
+const router = require("express").Router();
 
-module.exports = function (app) {
 
-  app.get("/api/workouts/populated", function (req, res) {
+  router.get("/api/workouts/populated", function (req, res) {
     db.Workout.find({}).populate("exercises").then(data => {
       res.json(data)
     })
   });
 
-  app.get("/api/workouts", function (req, res) {
+  router.get("/api/workouts", function (req, res) {
     db.Workout.find({}).then(data => {
       res.json(data)
     })
   });
 
-  app.post("/api/workouts", async function (req, res) {
+  router.post("/api/workouts", async function (req, res) {
     try {
       let workout = await db.Workout.create({ name: req.body.name })
       res.json(workout)
@@ -25,7 +25,7 @@ module.exports = function (app) {
     }
   })
 
-  app.post("/api/exercises", async function (req, res) {
+  router.post("/api/exercises", async function (req, res) {
     try {
       let exercise = req.body.exercise
       let inserted = await db.Exercise.create(exercise)
@@ -43,7 +43,7 @@ module.exports = function (app) {
 
 
 
-  app.delete("/api/workouts/:id", async function (req, res) {
+  router.delete("/api/workouts/:id", async function (req, res) {
     try {
       let workout = await db.Workout.findOne({ _id: mongoose.Types.ObjectId(req.params.id) });
       let exerciseIds = workout.exercises
@@ -60,7 +60,7 @@ module.exports = function (app) {
 
   });
 
-  app.delete("/api/exercises/:id", async function (req, res) {
+  router.delete("/api/exercises/:id", async function (req, res) {
     try {
       let deleted = await db.Exercise.remove({ _id: mongoose.Types.ObjectId(req.params.id) })
       res.json(deleted)
@@ -70,7 +70,7 @@ module.exports = function (app) {
     }
   })
 
-  app.put("/api/exercises/:id", function (req, res) {
+  router.put("/api/exercises/:id", function (req, res) {
     console.log(req.body)
     db.Exercise.update({_id: mongoose.Types.ObjectId(req.params.id)}, 
     req.body,
@@ -83,7 +83,7 @@ module.exports = function (app) {
     })
   })
 
-  app.put("/api/workouts/:id", function (req, res) {
+  router.put("/api/workouts/:id", function (req, res) {
     db.Workout.updateOne({ _id: mongoose.Types.ObjectId(req.params.id) },
       {
         $set: req.body
@@ -94,4 +94,5 @@ module.exports = function (app) {
         res.json(err)
       })
   })
-};
+
+  module.exports = router;
